@@ -351,7 +351,7 @@ __git_index_files ()
 	local root="${2-.}" file
 
 	__git_ls_files_helper "$root" "$1" |
-	sed -e '/^\//! s#/.*##' | sort | uniq
+	cut -f1 -d/ | uniq
 }
 
 # Lists branches from the local repository.
