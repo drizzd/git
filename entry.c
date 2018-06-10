@@ -78,8 +78,13 @@ static void remove_subtree(struct strbuf *path)
 
 static int create_file(const char *path, unsigned int mode)
 {
+	int flags;
+	if (checkout_inplace)
+		flags = O_WRONLY | O_CREAT | O_TRUNC;
+	else
+		flags = O_WRONLY | O_CREAT | O_EXCL;
 	mode = (mode & 0100) ? 0777 : 0666;
-	return open(path, O_WRONLY | O_CREAT | O_EXCL, mode);
+	return open(path, flags, mode);
 }
 
 static void *read_blob_entry(const struct cache_entry *ce, unsigned long *size)
@@ -470,8 +475,15 @@ int checkout_entry(struct cache_entry *ce,
 			if (!state->force)
 				return error("%s is a directory", path.buf);
 			remove_subtree(&path);
-		} else if (unlink(path.buf))
-			return error_errno("unable to unlink old '%s'", path.buf);
+		} else if (checkout_inplace) {
+			if (!(st.st_mode & 0200) ||
+			    (trust_executable_bit && (st.st_mode & 0100) != (ce->ce_mode & 0100)))
+				if (chmod(path.buf, (ce->ce_mode & 0100) ? 0777 : 0666))
+					return error_errno(_("unable to change mode of '%s'"), path.buf);
+		} else {
+			if (unlink(path.buf))
+				return error_errno(_("unable to unlink old '%s'"), path.buf);
+		}
 	} else if (state->not_new)
 		return 0;
 

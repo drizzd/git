@@ -923,6 +923,17 @@ core.sparseCheckout::
 	Enable "sparse checkout" feature. See section "Sparse checkout" in
 	linkgit:git-read-tree[1] for more information.
 
+core.checkoutInPlace::
+	Check out file contents in place. By default Git checkout removes existing
+	work tree files before it replaces them with different content. If this
+	option is enabled, Git will overwrite the contents of existing files in
+	place. This is useful on Windows, where open file handles to a removed file
+	prevent creating new files at the same path.
+	Note that the current implementation of in-place checkout makes no effort
+	to update read/write permissions according to umask. Permissions are
+	however modified to enable write access and to updates executable
+	permissions.
+
 core.abbrev::
 	Set the length object names are abbreviated to.  If
 	unspecified or set to "auto", an appropriate value is

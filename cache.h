@@ -808,6 +808,7 @@ extern char *git_replace_ref_base;
 extern int fsync_object_files;
 extern int core_preload_index;
 extern int core_apply_sparse_checkout;
+extern int checkout_inplace;
 extern int precomposed_unicode;
 extern int protect_hfs;
 extern int protect_ntfs;
@@ -1530,6 +1531,7 @@ struct checkout {
 	unsigned force:1,
 		 quiet:1,
 		 not_new:1,
+		 inplace:1,
 		 refresh_cache:1;
 };
 #define CHECKOUT_INIT { NULL, "" }
